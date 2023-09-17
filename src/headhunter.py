@@ -1,4 +1,5 @@
 from src.abstract_api import VacancyByAPI
+from config import VACANCIES_PER_PAGE
 import requests
 
 
@@ -7,9 +8,9 @@ class HeadHunterAPI(VacancyByAPI):
 
     _base_url = "https://api.hh.ru/vacancies"
 
-    def __init__(self, vacancy_area=113, page=0, per_page=50) -> None:
+    def __init__(self, vacancy_area=113, page=0, per_page=VACANCIES_PER_PAGE) -> None:
         """
-        Конструктор инициализирует экземпляр класса по названию вакансии
+        Инициализатор экземпляров класса для работы с API
         :param vacancy_area: область поиска -- по умолчанию по всей России
         :param page: страница поиска -- по умолчанию 0 (начальная)
         :param per_page: количество вакансий на страницу -- по умолчанию 50
@@ -17,6 +18,8 @@ class HeadHunterAPI(VacancyByAPI):
         self.vacancy_area = vacancy_area
         self.page = page
         self.per_page = per_page
+        if self.per_page <= 0 or self.per_page > 100:
+            self.per_page = 50
 
     def get_vacancies_by_api(self, vacancy_title: str) -> list[dict] or list:
         """
@@ -76,15 +79,15 @@ class HeadHunterAPI(VacancyByAPI):
                 requirements = requirements.strip().replace('<highlighttext>', '').replace('</highlighttext>', '')
 
             vacancy_info = {
-                            'vacancy_title': vacancy_title,
-                            'vacancy_area': vacancy_area,
-                            'vacancy_url': vacancy_url,
-                            'salary_from': salary_from,
-                            'salary_to': salary_to,
-                            'currency': currency,
-                            'experience': experience,
-                            'requirements': requirements
-                            }
+                'vacancy_title': vacancy_title,
+                'vacancy_area': vacancy_area,
+                'vacancy_url': vacancy_url,
+                'salary_from': salary_from,
+                'salary_to': salary_to,
+                'currency': currency,
+                'experience': experience,
+                'requirements': requirements
+            }
 
             organized_vacancy_list.append(vacancy_info)
 

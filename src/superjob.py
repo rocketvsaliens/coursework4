@@ -1,4 +1,5 @@
 from src.abstract_api import VacancyByAPI
+from config import VACANCIES_PER_PAGE
 import requests
 import os
 
@@ -9,14 +10,16 @@ class SuperJobAPI(VacancyByAPI):
     _base_url = 'https://api.superjob.ru/2.0/vacancies'
     _API_KEY: str = os.getenv('SJ_API_KEY')
 
-    def __init__(self, page=0, per_page=50) -> None:
+    def __init__(self, page=0, per_page=VACANCIES_PER_PAGE) -> None:
         """
-        Конструктор инициализирует экземпляр класса по названию вакансии
+        Инициализатор экземпляров класса для работы с API
         :param page: страница поиска -- по умолчанию 0 (начальная)
         :param per_page: количество вакансий -- по умолчанию 50
         """
         self.page = page
         self.per_page = per_page
+        if self.per_page <= 0 or self.per_page > 100:
+            self.per_page = 50
 
     def get_vacancies_by_api(self, vacancy_title: str) -> list[dict] or list:
         """
@@ -70,15 +73,15 @@ class SuperJobAPI(VacancyByAPI):
                 requirements = requirements.strip().replace('\n', '')
 
             vacancy_info = {
-                            'vacancy_title': vacancy_title,
-                            'vacancy_area': vacancy_area,
-                            'vacancy_url': vacancy_url,
-                            'salary_from': salary_from,
-                            'salary_to': salary_to,
-                            'currency': currency,
-                            'experience': experience,
-                            'requirements': requirements,
-                            }
+                'vacancy_title': vacancy_title,
+                'vacancy_area': vacancy_area,
+                'vacancy_url': vacancy_url,
+                'salary_from': salary_from,
+                'salary_to': salary_to,
+                'currency': currency,
+                'experience': experience,
+                'requirements': requirements,
+            }
 
             organized_vacancy_list.append(vacancy_info)
 

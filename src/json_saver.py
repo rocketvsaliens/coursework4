@@ -1,10 +1,9 @@
 from src.abstract_saver import VacancySaver
 import json
-import os
+from config import JSON_DATA_PATH
 
 
 class JsonSaver(VacancySaver):
-    JSON_DATA_PATH = os.path.join('..', 'json_data', 'vacancies.json')
 
     def save_vacancies_to_json(self, vacancy_list):
         """
@@ -12,16 +11,17 @@ class JsonSaver(VacancySaver):
         :param vacancy_list: список с вакансиями
         """
         try:
-            with open(self.JSON_DATA_PATH, 'w') as file:
+            with open(JSON_DATA_PATH, 'w') as file:
                 json.dump(vacancy_list, file, indent=2, ensure_ascii=False)
             print("Данные успешно записаны в файл.")
         except Exception as e:
             print(f"Ошибка при записи данных в файл: {e}")
 
-    def load_vacancies(self):
+    @staticmethod
+    def load_vacancies():
         """Загружает данные из файла с вакансиями"""
         try:
-            with open(self.JSON_DATA_PATH, 'r') as file:
+            with open(JSON_DATA_PATH, 'r') as file:
                 data = json.load(file)
             return data
         except FileNotFoundError:
@@ -65,7 +65,7 @@ class JsonSaver(VacancySaver):
         Очищает файл с вакансиями
         """
         try:
-            with open(self.JSON_DATA_PATH, 'w') as file:
+            with open(JSON_DATA_PATH, 'w') as file:
                 file.write('')
             print("Данные успешно удалены из файла.")
         except Exception as e:
