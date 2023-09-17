@@ -7,7 +7,7 @@ class VacancyByAPI(ABC):
     """
 
     @abstractmethod
-    def get_vacancies_by_api(self):
+    def get_vacancies_by_api(self, vacancy_title: str) -> list:
         """
         Получает список вакансий по API
         """
@@ -16,4 +16,5 @@ class VacancyByAPI(ABC):
     @staticmethod
     @abstractmethod
     def organize_vacancy_info(vacancy_data: list) -> list:
+        """Организует данные о вакансиях в определённом виде"""
         pass

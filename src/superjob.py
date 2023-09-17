@@ -9,25 +9,24 @@ class SuperJobAPI(VacancyByAPI):
     _base_url = 'https://api.superjob.ru/2.0/vacancies'
     _API_KEY: str = os.getenv('SJ_API_KEY')
 
-    def __init__(self, vacancy_title: str, page=0, per_page=50) -> None:
+    def __init__(self, page=0, per_page=50) -> None:
         """
         Конструктор инициализирует экземпляр класса по названию вакансии
-        :param vacancy_title: название вакансии
         :param page: страница поиска -- по умолчанию 0 (начальная)
         :param per_page: количество вакансий -- по умолчанию 50
         """
-        self.vacancy_title = vacancy_title
         self.page = page
         self.per_page = per_page
 
-    def get_vacancies_by_api(self):
+    def get_vacancies_by_api(self, vacancy_title: str) -> list[dict] or list:
         """
         Выполняет сбор вакансий через API
+        :param vacancy_title: название вакансии
         :return: список вакансий для создания экземпляров класса Vacancy
         """
         headers = {'X-Api-App-Id': self._API_KEY}
         params = {
-            'keyword': self.vacancy_title,
+            'keyword': vacancy_title,
             'page': self.page,
             'count': self.per_page
         }
@@ -87,5 +86,5 @@ class SuperJobAPI(VacancyByAPI):
 
 
 if __name__ == '__main__':
-    sj = SuperJobAPI('python')
-    print(sj.get_vacancies_by_api())
+    sj = SuperJobAPI()
+    print(sj.get_vacancies_by_api('python'))

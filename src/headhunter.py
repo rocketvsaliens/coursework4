@@ -7,26 +7,25 @@ class HeadHunterAPI(VacancyByAPI):
 
     _base_url = "https://api.hh.ru/vacancies"
 
-    def __init__(self, vacancy_title: str, vacancy_area=113, page=0, per_page=50) -> None:
+    def __init__(self, vacancy_area=113, page=0, per_page=50) -> None:
         """
         Конструктор инициализирует экземпляр класса по названию вакансии
-        :param vacancy_title: название вакансии
         :param vacancy_area: область поиска -- по умолчанию по всей России
         :param page: страница поиска -- по умолчанию 0 (начальная)
         :param per_page: количество вакансий на страницу -- по умолчанию 50
         """
-        self.vacancy_title = vacancy_title
         self.vacancy_area = vacancy_area
         self.page = page
         self.per_page = per_page
 
-    def get_vacancies_by_api(self) -> list[dict] or str:
+    def get_vacancies_by_api(self, vacancy_title: str) -> list[dict] or list:
         """
         Выполняет сбор вакансий через API
+        :param vacancy_title: название вакансии
         :return: список вакансий для создания экземпляров класса Vacancy
         """
         params = {
-            'text': self.vacancy_title,
+            'text': vacancy_title,
             'area': self.vacancy_area,
             'page': self.page,
             'per_page': self.per_page
@@ -38,9 +37,11 @@ class HeadHunterAPI(VacancyByAPI):
             if vacancies:
                 list_vacancies = self.__class__.organize_vacancy_info(vacancies)
                 return list_vacancies
+            return []
 
         else:
-            return f'Ошибка {response.status_code} при выполнении запроса'
+            print(f'Ошибка {response.status_code} при выполнении запроса')
+            return []
 
     @staticmethod
     def organize_vacancy_info(vacancy_data: list) -> list:
@@ -53,8 +54,8 @@ class HeadHunterAPI(VacancyByAPI):
         organized_vacancy_list = []
 
         for vacancy in vacancy_data:
-            name = vacancy.get('name')
-            area = vacancy.get('area')['name']
+            vacancy_title = vacancy.get('name')
+            vacancy_area = vacancy.get('area')['name']
             vacancy_url = f"https://hh.ru/vacancy/{vacancy.get('id')}"
             salary = vacancy.get('salary')
             if not salary:
@@ -74,8 +75,9 @@ class HeadHunterAPI(VacancyByAPI):
             if requirements:
                 requirements = requirements.strip().replace('<highlighttext>', '').replace('</highlighttext>', '')
 
-            vacancy_info = {'name': name,
-                            'area': area,
+            vacancy_info = {
+                            'vacancy_title': vacancy_title,
+                            'vacancy_area': vacancy_area,
                             'vacancy_url': vacancy_url,
                             'salary_from': salary_from,
                             'salary_to': salary_to,
@@ -90,5 +92,5 @@ class HeadHunterAPI(VacancyByAPI):
 
 
 if __name__ == '__main__':
-    hh = HeadHunterAPI('python')
-    print(hh.get_vacancies_by_api())
+    hh = HeadHunterAPI()
+    print(hh.get_vacancies_by_api('junior python developer'))
