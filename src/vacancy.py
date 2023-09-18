@@ -32,6 +32,10 @@ class Vacancy:
             f'Требования: {self.requirements}'
         )
 
+    def __sub__(self, other) -> int:
+        """Показывает разницу зарплат вакансий"""
+        return self.get_avg_salary() - other.get_avg_salary()
+
     def get_currency_info(self) -> str:
         """Преобразуем отображение рублей для зарплаты"""
         if self.currency.lower() in ('rur', 'rub', ''):

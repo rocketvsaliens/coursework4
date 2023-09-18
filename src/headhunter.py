@@ -18,7 +18,7 @@ class HeadHunterAPI(VacancyByAPI):
         self.vacancy_area = vacancy_area
         self.page = page
         self.per_page = per_page
-        if self.per_page <= 0 or self.per_page > 100:
+        if self.per_page <= 0 or self.per_page <= 100:
             self.per_page = 50
 
     def get_vacancies_by_api(self, vacancy_title: str) -> list[dict] or list:
@@ -94,6 +94,6 @@ class HeadHunterAPI(VacancyByAPI):
         return organized_vacancy_list
 
 
-if __name__ == '__main__':
-    hh = HeadHunterAPI()
-    print(hh.get_vacancies_by_api('junior python developer'))
+# if __name__ == '__main__':
+#     hh = HeadHunterAPI()
+#     print(hh.get_vacancies_by_api('junior python developer'))
