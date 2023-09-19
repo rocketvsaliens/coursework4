@@ -34,8 +34,8 @@ def show_top_vacancies_by_salary(handler, vacancies_list: list) -> list:
     """
     while True:
         choice = input('\nВведите количество вакансий для вывода в топ N: ')
-        if choice == '0':
-            break
+        if choice == '0' or choice == '':
+            print(f'Число должно быть больше 0 и меньше {len(vacancies_list)}')
         else:
             try:
                 choice = int(choice)
@@ -59,3 +59,54 @@ def show_top_vacancies_by_salary(handler, vacancies_list: list) -> list:
             except TypeError:
                 print('Некорректный ввод. Вакансии не будут показаны.')
                 return []
+
+
+def filter_top_vacancies(handler, top_vacancies):
+    filter_words = input('Введите ключевые слова через пробел для фильтрации в топе вакансий\n'
+                         'или нажмите Enter, чтобы пропустить этот шаг: ').split()
+
+    if filter_words:
+        filtered_list = handler.search_instances_by_keywords(top_vacancies, filter_words)
+        if filtered_list:
+            print(f'\nОтобрано {len(filtered_list)} вакансий, в которых есть хотя бы одно из ключевых слов\n')
+            while True:
+                choice = input('Выберите действие: 1 - показать вакансии, 2 - записать вакансии в файл ')
+                if choice == '1':
+                    for vacancy in filtered_list:
+                        print(vacancy)
+                        break
+                elif choice == '2':
+                    save_to_file(handler, filtered_list)
+                    exit(0)
+                else:
+                    print('Некорректный ввод.')
+        else:
+            print('Нет вакансий, соответствующих заданным критериям.')
+    else:
+        while True:
+            print('Вы не ввели слова для фильтрации. Сохранить топ-вакансий в файл?')
+            choice = input('Выберите действие: 0 - выйти из программы, 2 - записать вакансии в файл ')
+            if choice == '0':
+                print('Всего доброго!')
+                break
+            elif choice == '2':
+                save_to_file(handler, top_vacancies)
+                exit(0)
+            else:
+                print('Некорректный ввод.')
+
+
+def save_to_file(handler, vacancies_list):
+    while True:
+        file_format = input('Выберите формат файла: 0 - csv, 1 - xls ')
+        filename = input('Введите имя файла (без расширения): ')
+        if filename == '':
+            filename = 'vacancies'
+        if file_format == '0':
+            handler.write_vacancies_to_csv(filename, vacancies_list)
+            break
+        elif file_format == '1':
+            handler.write_vacancies_to_xls(filename, vacancies_list)
+            break
+        else:
+            print('Некорректный ввод')

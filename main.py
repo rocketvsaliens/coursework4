@@ -23,35 +23,13 @@ def main():
 
     # Дальше работаем с экземплярами класса Vacancy
     all_vacancies_list = json_saver.json_to_instances(Vacancy)
+    # Создаём экземпляр класса-обработчика сущностей вакансий
     vacancies_handler = VacancyHandler(all_vacancies_list)
 
+    # Выводим топ N вакансий
     top_vacancies_list = user_interaction.show_top_vacancies_by_salary(vacancies_handler, all_vacancies_list)
-
-    filter_words = input("Введите ключевые слова для фильтрации в топе вакансий: ").split()
-
-    if filter_words:
-        filtered_list = vacancies_handler.search_instances_by_keywords(filter_words)
-        if filtered_list:
-            while True:
-                choice = input('Выберите действие: 1 - показать вакансии, 2 - записать вакансии в файл')
-                if choice == '1':
-                    for vacancy in filtered_list:
-                        print(vacancy)
-                elif choice == '2':
-                    vacancies_handler.write_vacancies_to_xls(filtered_list)
-                    break
-                else:
-                    print('Некорректный ввод')
-        else:
-            print('Нет вакансий, соответствующих заданным критериям.')
-
-    else:
-        while True:
-            choice = input('Сохранить топ вакансий в файл? 0 - не сохранять, 1 - сохранить')
-            if choice == '0':
-                exit(0)
-            elif choice == '1':
-                vacancies_handler.write_vacancies_to_xls(top_vacancies_list)
+    # Предлагаем отфильтровать топ вакансий
+    user_interaction.filter_top_vacancies(vacancies_handler, top_vacancies_list)
 
 
 if __name__ == '__main__':

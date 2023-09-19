@@ -1,6 +1,9 @@
+import os.path
+
 from src.vacancy import Vacancy
-from config import XLS_FILE_PATH
+from config import USER_FILE_DIR
 import xlwt
+import csv
 
 
 class VacancyHandler(Vacancy):
@@ -23,21 +26,42 @@ class VacancyHandler(Vacancy):
         Сортирует вакансии по зарплате
         """
         return sorted(self.remove_without_salary(),
-                      key=lambda x: x.salary, reverse=True)
+                      key=lambda x: x.get_avg_salary(), reverse=True)
 
-    def search_instances_by_keywords(self, keywords):
+    @staticmethod
+    def search_instances_by_keywords(list_vacancies, keywords):
         matching_instances = []
 
-        for instance in self.vacancies_list:
+        for instance in list_vacancies:
             for key, value in instance.__dict__.items():
-                if isinstance(value, str) and any(keyword.lower() in value.lower() for keyword in keywords):
+                if any(keyword.lower() in str(value).lower() for keyword in keywords):
                     matching_instances.append(instance)
                     break
 
         return matching_instances
 
     @staticmethod
-    def write_vacancies_to_xls(list_vacancies):
+    def write_vacancies_to_csv(filename, list_vacancies):
+        filename = filename + '.csv'
+        file_path = os.path.join(USER_FILE_DIR, filename)
+
+        fieldnames = ['vacancy_title', 'vacancy_area', 'vacancy_url',
+                      '_salary_from', '_salary_to', 'currency',
+                      'experience', 'requirements']
+
+        with open(file_path, 'w', newline='', encoding='utf-8') as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+
+            for vacancy in list_vacancies:
+                writer.writerow(vars(vacancy))
+        print(f'Данные успешно записаны в файл CSV. Путь к файлу: {file_path}')
+
+    @staticmethod
+    def write_vacancies_to_xls(filename, list_vacancies):
+        filename = filename + '.xls'
+        file_path = os.path.join(USER_FILE_DIR, filename)
+
         workbook = xlwt.Workbook()
         sheet = workbook.add_sheet('Vacancies')
 
@@ -55,5 +79,5 @@ class VacancyHandler(Vacancy):
                 value = getattr(vacancy, fieldname, '')
                 sheet.write(row, col, value)
 
-        workbook.save(XLS_FILE_PATH)
-        print("Данные успешно записаны в файл XLS.")
+        workbook.save(file_path)
+        print(f'Данные успешно записаны в файл XLS. Путь к файлу: {file_path}')
