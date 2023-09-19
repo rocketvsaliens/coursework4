@@ -1,14 +1,14 @@
 from src.headhunter import HeadHunterAPI
 from src.superjob import SuperJobAPI
 from src.vacancy import Vacancy
+from src.vacancy_handler import VacancyHandler
 
 from utils import user_interaction
-from utils import vacancies_handler
 
 
 def main():
     platforms = {'1': 'HeadHunter', '2': 'SuperJob'}
-
+    # Выбираем платформу для поиска вакансий
     search_platform = user_interaction.get_started(platforms)
 
     if search_platform == 'HeadHunter':
@@ -19,27 +19,26 @@ def main():
         api_provider = SuperJobAPI()
 
     search_query = input("Введите запрос для поиска вакансии: ")
+    # Получаем список с вакансиями
     vacancies_data = api_provider.get_vacancies_by_api(search_query)
-
+    # Завершаем программу, если вакансий не найдено
     if not vacancies_data:
-        print('Не удалось найти вакансии по вашему запросу')
+        print('К сожалению, не удалось найти вакансии по вашему запросу')
         exit(0)
     else:
         all_vacancies_list = [Vacancy(i) for i in vacancies_data]
         print(f'Успешно! Получено вакансий: {len(all_vacancies_list)}\n')
 
-    print('Удалить вакансии без указания зарплаты?')
-    while True:
-        answer = input('Введите "Y", если "да" или "N", если "нет": ').lower()
-        if answer not in ('n', 'y'):
-            print('Некорректный ввод')
-            continue
-        elif answer == 'n':
-            break
-        elif answer == 'y':
-            vacancies_with_salary_list = vacancies_handler.filter_by_salary(all_vacancies_list)
-            print(f'Успешно! Осталось вакансий: {len(vacancies_with_salary_list)}')
-            break
+    # Создаём экземпляр класса для обработки вакансий
+    handler = VacancyHandler(all_vacancies_list)
+
+    # Предлагаем пользователю оставить только вакансии с зарплатой
+    nonzero_salary_vacancies_list = user_interaction.filter_by_non_zero_salary(handler)
+    # Если пользователь оставил только вакансии с зарплатой, предлагаем вывести топ по з\п
+    if nonzero_salary_vacancies_list:
+        user_interaction.show_top_vacancies_by_salary(handler, nonzero_salary_vacancies_list)
+
+    vacancies_to_file = nonzero_salary_vacancies_list if not nonzero_salary_vacancies_list else all_vacancies_list
 
 
 if __name__ == '__main__':
