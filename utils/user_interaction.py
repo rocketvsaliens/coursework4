@@ -70,11 +70,14 @@ def filter_top_vacancies(handler, top_vacancies):
         if filtered_list:
             print(f'\nОтобрано {len(filtered_list)} вакансий, в которых есть хотя бы одно из ключевых слов\n')
             while True:
-                choice = input('Выберите действие: 1 - показать вакансии, 2 - записать вакансии в файл ')
+                choice = input('Выберите действие: 0 - выйти, 1 - показать вакансии, 2 - записать вакансии в файл ')
+                if choice == '0':
+                    print('Всего доброго!')
+                    exit(0)
                 if choice == '1':
                     for vacancy in filtered_list:
                         print(vacancy)
-                        break
+                    break
                 elif choice == '2':
                     save_to_file(handler, filtered_list)
                     exit(0)
