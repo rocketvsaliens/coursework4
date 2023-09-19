@@ -22,19 +22,21 @@ class Vacancy:
         self.experience = vacancy_info.get('experience')
         self.requirements = vacancy_info.get('requirements')
 
+        self.salary = self.get_avg_salary()
+
     def __str__(self) -> str:
         return (
             f'Вакансия: {self.vacancy_title}\n'
-            f'Ссылка: {self.vacancy_url}\n'
             f'Город/регион: {self.vacancy_area}\n'
             f'Зарплата: {self.get_salary_string()}\n'
             f'Опыт работы: {self.experience}\n'
-            f'Требования: {self.requirements}'
+            f'Требования: {self.requirements}\n'
+            f'Ссылка на вакансию: {self.vacancy_url}\n'
         )
 
     def __sub__(self, other) -> int:
         """Показывает разницу зарплат вакансий"""
-        return self.get_avg_salary() - other.get_avg_salary()
+        return self.salary - other.salary
 
     def get_currency_info(self) -> str:
         """Преобразуем отображение рублей для зарплаты"""

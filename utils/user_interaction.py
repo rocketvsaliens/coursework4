@@ -1,80 +1,61 @@
-def get_started(platforms: dict) -> str:
-    """
-    Выбираем платформу для поиска вакансий
-    :param platforms: словарь вида {"номер": "платформа вакансий"}
-    """
-    print('Выберите сайт для поиска вакансий:')
-    print(*[f'{i[0]} - {i[1]}' for i in platforms.items()], sep='\n')
+def get_search_query_json_data(api_providers, json_instance):
+    search_query = input("Введите базовый запрос для поиска вакансии: ")
+    # Получаем список с вакансиями
+    vacancies_data = []
+    for provider in api_providers:
+        vacancies_data += provider.get_vacancies_by_api(search_query)
 
+    if not vacancies_data:
+        print('К сожалению, не удалось найти вакансии по вашему запросу')
+        exit(0)
+    else:
+        print(f'Получено вакансий: {len(vacancies_data)}\n')
+        json_instance.save_vacancies_to_json(vacancies_data)
+
+
+def remove_muddy_vacancies(json_instance):
     while True:
-
-        platform = input('Введите номер: ')
-
-        search_platform = platforms.get(platform)
-
-        if not search_platform:
-            print('Некорректный ввод. Попробуйте снова')
-            continue
-        else:
-            print(f'Выбрана платформа {search_platform}\n')
+        choice = input('Удалить вакансии с ненулевой зарплатой. 1 - да, 0 - нет ')
+        if choice == '0':
             break
-
-    return search_platform
-
-
-def filter_by_non_zero_salary(vacancy_handler) -> list:
-    """
-    Отфильтровывает вакансии, в которых указана зарплата
-    :param vacancy_handler: экземпляр класса-обработчика вакансий
-    :return: список с вакансиями, где указана зарплата
-    """
-    print('Удалить вакансии без указания зарплаты?')
-    while True:
-        answer = input('0 - "нет", 1 - "да" ')
-
-        if answer == '0':
-            return []
-        elif answer == '1':
-            filtered_vacancy_list = vacancy_handler.remove_without_salary()
-            if filtered_vacancy_list:
-                print(f'Успешно! Осталось вакансий: {len(filtered_vacancy_list)}\n')
-                return filtered_vacancy_list
-            else:
-                print('Упс! Кажется, для этого запроса не принято указывать зарплату.')
-                return []
+        elif choice == '1':
+            json_instance.remove_zero_salary_vacancies()
+            break
+        else:
+            print('Некорректный ввод')
 
 
-def show_top_vacancies_by_salary(vacancy_handler, vacancies_list: list) -> None:
+def show_top_vacancies_by_salary(handler, vacancies_list: list) -> list:
     """
     Выводит топ вакансий по зарплате
-    :param vacancy_handler: экземпляр класса-обработчика вакансий
+    :param handler: экземпляр класса-обработчика вакансий
     :param vacancies_list: список вакансий
     :return:
     """
-    print('Показать топ вакансий по зарплате?')
     while True:
-        choice = input('Введите количество вакансий для показа. 0 - не показывать вакансии ')
+        choice = input('\nВведите количество вакансий для вывода в топ N: ')
         if choice == '0':
             break
         else:
             try:
                 choice = int(choice)
                 if 0 < choice < len(vacancies_list):
-                    sorted_vacancies = vacancy_handler.sort_vacancies_by_salary()[:choice]
+                    sorted_vacancies = handler.sort_vacancies_by_salary()[:choice]
                 else:
-                    sorted_vacancies = vacancy_handler.sort_vacancies_by_salary()
+                    sorted_vacancies = handler.sort_vacancies_by_salary()
 
                 highest_paid = sorted_vacancies[0]
                 lowest_paid = sorted_vacancies[-1]
 
-                print(f'\nРазбег усреднённых зарплат вакансий в этом диапазоне равен '
+                print(f'\nРазбег усреднённых зарплат в этом диапазоне вакансий равен '
                       f'{highest_paid - lowest_paid} руб.\n')
 
                 for vacancy in sorted_vacancies:
                     print(vacancy)
                     print()
-                break
+
+                return sorted_vacancies
 
             except TypeError:
                 print('Некорректный ввод. Вакансии не будут показаны.')
-                break
+                return []

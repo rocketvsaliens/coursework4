@@ -13,7 +13,7 @@ class JsonSaver(VacancySaver):
         try:
             with open(JSON_DATA_PATH, 'w') as file:
                 json.dump(vacancy_list, file, indent=2, ensure_ascii=False)
-            print("Данные успешно записаны в файл.")
+
         except Exception as e:
             print(f"Ошибка при записи данных в файл: {e}")
 
@@ -30,6 +30,22 @@ class JsonSaver(VacancySaver):
         except json.JSONDecodeError:
             print("Некорректный формат JSON-файла.")
             return None
+
+    def remove_zero_salary_vacancies(self):
+        try:
+            data = self.load_vacancies()
+
+            filtered_data = [item for item in data if item['salary_from'] != 0 or item['salary_to'] != 0]
+
+            self.save_vacancies_to_json(filtered_data)
+
+            print(f"Вакансии с нулевой зарплатой успешно удалены. Осталось вакансий {len(filtered_data)}")
+
+        except FileNotFoundError:
+            print("Файл не найден.")
+
+        except json.JSONDecodeError:
+            print("Некорректный JSON формат файла.")
 
     def get_vacancies_by_criteria(self, criteria: list) -> list:
         """
@@ -70,6 +86,24 @@ class JsonSaver(VacancySaver):
             print("Данные успешно удалены из файла.")
         except Exception as e:
             print(f"Ошибка при удалении данных из файла: {e}")
+
+    def json_to_instances(self, class_name):
+        instances = []
+
+        try:
+            data = self.load_vacancies()
+
+            for item in data:
+                instance = class_name(item)
+                instances.append(instance)
+
+        except FileNotFoundError:
+            print("Файл не найден.")
+
+        except json.JSONDecodeError:
+            print("Некорректный JSON формат файла.")
+
+        return instances
 
 
 if __name__ == '__main__':

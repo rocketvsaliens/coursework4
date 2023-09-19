@@ -17,9 +17,10 @@ class HeadHunterAPI(VacancyByAPI):
         """
         self.vacancy_area = vacancy_area
         self.page = page
-        self.per_page = per_page
-        if self.per_page <= 0 or self.per_page <= 100:
+        if per_page <= 0 or per_page > 100:
             self.per_page = 50
+        else:
+            self.per_page = per_page
 
     def get_vacancies_by_api(self, vacancy_title: str) -> list[dict] or list:
         """
