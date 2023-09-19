@@ -1,19 +1,48 @@
-def get_search_query_json_data(api_providers, json_instance):
-    search_query = input("Введите базовый запрос для поиска вакансии: ")
+from src.headhunter import HeadHunterAPI
+from src.superjob import SuperJobAPI
+
+from config import MAX_VACANCIES_PER_PAGE
+
+
+def get_search_query_json_data(json_instance):
+    """
+    Выполняет поиск по сайтам вакансий и записывает результаты в файл JSON
+    """
+    search_query = input('Введите базовый запрос для поиска вакансии: ')
+    number_of_vacancies = input('Сколько вакансий необходимо получить с каждого сайта (не более 100): ')
+
+    try:
+        number_of_vacancies = int(number_of_vacancies)
+        if number_of_vacancies <= 0 or number_of_vacancies > 100:
+            number_of_vacancies = MAX_VACANCIES_PER_PAGE
+    except ValueError:
+        number_of_vacancies = MAX_VACANCIES_PER_PAGE
+
+    # Создаём экземпляры классов для работы с API сайтов с вакансиями
+    hh_provider = HeadHunterAPI(per_page=number_of_vacancies)
+    sj_provider = SuperJobAPI(per_page=number_of_vacancies)
+
+    # Создаём список экземпляров классов для работы с API сайтов с вакансиями
+    platforms = [hh_provider, sj_provider]
+
     # Получаем список с вакансиями
     vacancies_data = []
-    for provider in api_providers:
+    for provider in platforms:
         vacancies_data += provider.get_vacancies_by_api(search_query)
 
     if not vacancies_data:
         print('К сожалению, не удалось найти вакансии по вашему запросу')
         exit(0)
     else:
-        print(f'Получено вакансий: {len(vacancies_data)}\n')
+        print(f'Получено {len(vacancies_data)} вакансий с сайтов {[str(i) for i in platforms]}\n')
         json_instance.save_vacancies_to_json(vacancies_data)
 
 
 def remove_muddy_vacancies(json_instance):
+    """
+    Удаляет из JSON-файла записи о вакансиях, в которых не указана зарплата
+    :param json_instance: класс для работы с JSON
+    """
     while True:
         choice = input('Удалить вакансии с ненулевой зарплатой. 1 - да, 0 - нет ')
         if choice == '0':
@@ -30,10 +59,10 @@ def show_top_vacancies_by_salary(handler, vacancies_list: list) -> list:
     Выводит топ вакансий по зарплате
     :param handler: экземпляр класса-обработчика вакансий
     :param vacancies_list: список вакансий
-    :return:
+    :return: список вакансий, отсортированных по зарплате или пустой список
     """
     while True:
-        choice = input('\nВведите количество вакансий для вывода в топ N: ')
+        choice = input(f'\nВведите количество вакансий для вывода в топ N - от 1 до {len(vacancies_list)}: ')
         if choice == '0' or choice == '':
             print(f'Число должно быть больше 0 и меньше {len(vacancies_list)}')
         else:
@@ -61,9 +90,14 @@ def show_top_vacancies_by_salary(handler, vacancies_list: list) -> list:
                 return []
 
 
-def filter_top_vacancies(handler, top_vacancies):
+def filter_and_save_vacancies(json_instance, handler, top_vacancies: list) -> None:
+    """
+    Выводит на экран или сохраняет вакансии по заданным критериям
+    :param handler: экземпляр класса-обработчика вакансий
+    :param top_vacancies: список из вакансий топ N по зарплате
+    """
     filter_words = input('Введите ключевые слова через пробел для фильтрации в топе вакансий\n'
-                         'или нажмите Enter, чтобы пропустить этот шаг: ').split()
+                         'или Enter, чтобы пропустить этот шаг: ').split()
 
     if filter_words:
         filtered_list = handler.search_instances_by_keywords(top_vacancies, filter_words)
@@ -79,27 +113,33 @@ def filter_top_vacancies(handler, top_vacancies):
                         print(vacancy)
                     break
                 elif choice == '2':
-                    save_to_file(handler, filtered_list)
+                    save_to_file(json_instance, handler, filtered_list)
                     exit(0)
                 else:
                     print('Некорректный ввод.')
         else:
             print('Нет вакансий, соответствующих заданным критериям.')
     else:
+        print('Вы не ввели слова для фильтрации. Сохранить топ-вакансий в файл?')
+
         while True:
-            print('Вы не ввели слова для фильтрации. Сохранить топ-вакансий в файл?')
-            choice = input('Выберите действие: 0 - выйти из программы, 2 - записать вакансии в файл ')
+            choice = input('Выберите действие: 0 - выйти из программы, 1 - записать вакансии в файл ')
             if choice == '0':
                 print('Всего доброго!')
                 break
-            elif choice == '2':
-                save_to_file(handler, top_vacancies)
+            elif choice == '1':
+                save_to_file(json_instance, handler, top_vacancies)
                 exit(0)
             else:
                 print('Некорректный ввод.')
 
 
-def save_to_file(handler, vacancies_list):
+def save_to_file(json_instance, handler, vacancies_list: list):
+    """
+    Сохраняет вакансии в файл csv или xls c заданным именем
+    :param handler: экземпляр класса-обработчика вакансий
+    :param vacancies_list: список вакансий
+    """
     while True:
         file_format = input('Выберите формат файла: 0 - csv, 1 - xls ')
         filename = input('Введите имя файла (без расширения): ')
@@ -113,3 +153,4 @@ def save_to_file(handler, vacancies_list):
             break
         else:
             print('Некорректный ввод')
+    json_instance.clear_json_with_vacancies()

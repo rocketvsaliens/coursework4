@@ -1,6 +1,5 @@
 import os
 
-VACANCIES_PER_PAGE = 5
-JSON_DATA_PATH = os.path.join('data', 'vacancies.json')
+MAX_VACANCIES_PER_PAGE = 100
+JSON_DATA_DIR = os.path.join('json_data')
 USER_FILE_DIR = os.path.join('user_data')
-

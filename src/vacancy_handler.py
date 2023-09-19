@@ -1,21 +1,23 @@
 import os.path
-
-from src.vacancy import Vacancy
-from config import USER_FILE_DIR
 import xlwt
 import csv
 
+from src.vacancy import Vacancy
+from config import USER_FILE_DIR
+
 
 class VacancyHandler(Vacancy):
-    """Класс для работы со списком вакансий"""
+    """Класс для работы со списком экземпляров класса Vacancy"""
 
     def __init__(self, vacancies_list):
+        """Инициализируем экземпляр класса списком экземпляров класса Vacancy"""
         self.vacancies_list = vacancies_list
 
     def remove_without_salary(self) -> list:
         """
         Возвращает только вакансии с зарплатой
         """
+        # Похожий метод есть в классе JSONSaver. На всякий случай решила оставить оба.
         vacancies_with_salary = [vacancy for vacancy in self.vacancies_list
                                  if vacancy.get_avg_salary() != 0]
 
@@ -23,13 +25,20 @@ class VacancyHandler(Vacancy):
 
     def sort_vacancies_by_salary(self) -> list:
         """
-        Сортирует вакансии по зарплате
+        Сортирует вакансии по зарплате в порядке от большей к меньшей
+        :return: отсортированный список экземпляров класса
         """
-        return sorted(self.remove_without_salary(),
+        return sorted(self.vacancies_list,
                       key=lambda x: x.get_avg_salary(), reverse=True)
 
     @staticmethod
-    def search_instances_by_keywords(list_vacancies, keywords):
+    def search_instances_by_keywords(list_vacancies: list, keywords: list) -> list:
+        """
+        Ищет вакансии по ключевым словам
+        :param list_vacancies: экземпляров класса Vacancy
+        :param keywords: ключевые слова
+        :return: список экземпляров класса Vacancy, в которых есть хотя бы одно из ключевых слов
+        """
         matching_instances = []
 
         for instance in list_vacancies:
@@ -41,7 +50,12 @@ class VacancyHandler(Vacancy):
         return matching_instances
 
     @staticmethod
-    def write_vacancies_to_csv(filename, list_vacancies):
+    def write_vacancies_to_csv(filename: str, list_vacancies: list) -> None:
+        """
+        Записывает данные о вакансиях в файл csv
+        :param filename: имя файла (без расширения)
+        :param list_vacancies: список экземпляров класса Vacancy
+        """
         filename = filename + '.csv'
         file_path = os.path.join(USER_FILE_DIR, filename)
 
@@ -58,7 +72,12 @@ class VacancyHandler(Vacancy):
         print(f'Данные успешно записаны в файл CSV. Путь к файлу: {file_path}')
 
     @staticmethod
-    def write_vacancies_to_xls(filename, list_vacancies):
+    def write_vacancies_to_xls(filename: str, list_vacancies: list) -> None:
+        """
+        Записывает данные о вакансиях в файл xls
+        :param filename: имя файла (без расширения)
+        :param list_vacancies: список экземпляров класса Vacancy
+        """
         filename = filename + '.xls'
         file_path = os.path.join(USER_FILE_DIR, filename)
 

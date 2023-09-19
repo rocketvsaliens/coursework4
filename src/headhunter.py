@@ -1,5 +1,4 @@
-from src.abstract_api import VacancyByAPI
-from config import VACANCIES_PER_PAGE
+from abstract.abstract_api import VacancyByAPI
 import requests
 
 
@@ -8,7 +7,7 @@ class HeadHunterAPI(VacancyByAPI):
 
     _base_url = "https://api.hh.ru/vacancies"
 
-    def __init__(self, vacancy_area=113, page=0, per_page=VACANCIES_PER_PAGE) -> None:
+    def __init__(self, vacancy_area=113, page=0, per_page=1) -> None:
         """
         Инициализатор экземпляров класса для работы с API
         :param vacancy_area: область поиска -- по умолчанию по всей России
@@ -17,10 +16,10 @@ class HeadHunterAPI(VacancyByAPI):
         """
         self.vacancy_area = vacancy_area
         self.page = page
-        if per_page <= 0 or per_page > 100:
-            self.per_page = 50
-        else:
-            self.per_page = per_page
+        self.per_page = per_page
+
+    def __str__(self):
+        return 'HeadHunter'
 
     def get_vacancies_by_api(self, vacancy_title: str) -> list[dict] or list:
         """

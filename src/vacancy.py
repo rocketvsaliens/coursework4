@@ -19,10 +19,11 @@ class Vacancy:
         self.salary_from = vacancy_info.get('salary_from')
         self.salary_to = vacancy_info.get('salary_to')
         self.currency = vacancy_info.get('currency')
-        self.experience = vacancy_info.get('experience')
-        self.requirements = vacancy_info.get('requirements')
+        self.experience = vacancy_info.get('experience', 'Не указано')
+        self.requirements = vacancy_info.get('requirements',  'Не указано')
 
     def __str__(self) -> str:
+        """Строковое представление вакансии"""
         return (
             f'Вакансия: {self.vacancy_title}\n'
             f'Город/регион: {self.vacancy_area}\n'
@@ -32,9 +33,12 @@ class Vacancy:
             f'Ссылка на вакансию: {self.vacancy_url}\n'
         )
 
-    def __sub__(self, other) -> int:
-        """Показывает разницу зарплат вакансий"""
-        return self.get_avg_salary() - other.get_avg_salary()
+    def __sub__(self, other) -> int or str:
+        """Показывает разницу зарплат двух вакансий"""
+        if isinstance(other, Vacancy):
+            return self.get_avg_salary() - other.get_avg_salary()
+        else:
+            return '<Неизвестно>'
 
     def get_currency_info(self) -> str:
         """Преобразуем отображение рублей для зарплаты"""

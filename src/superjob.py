@@ -1,5 +1,4 @@
-from src.abstract_api import VacancyByAPI
-from config import VACANCIES_PER_PAGE
+from abstract.abstract_api import VacancyByAPI
 import requests
 import os
 
@@ -10,17 +9,17 @@ class SuperJobAPI(VacancyByAPI):
     _base_url = 'https://api.superjob.ru/2.0/vacancies'
     _API_KEY: str = os.getenv('SJ_API_KEY')
 
-    def __init__(self, page=0, per_page=VACANCIES_PER_PAGE) -> None:
+    def __init__(self, page=0, per_page=1) -> None:
         """
         Инициализатор экземпляров класса для работы с API
         :param page: страница поиска -- по умолчанию 0 (начальная)
         :param per_page: количество вакансий -- по умолчанию 50
         """
         self.page = page
-        if per_page <= 0 or per_page > 100:
-            self.per_page = 50
-        else:
-            self.per_page = per_page
+        self.per_page = per_page
+
+    def __str__(self):
+        return 'SuperJob'
 
     def get_vacancies_by_api(self, vacancy_title: str) -> list[dict] or list:
         """
