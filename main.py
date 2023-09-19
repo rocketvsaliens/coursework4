@@ -21,7 +21,7 @@ def main():
 
     # Выводим топ N вакансий
     top_vacancies_list = user_interaction.show_top_vacancies_by_salary(vacancies_handler, all_vacancies_list)
-    # Предлагаем отфильтровать топ вакансий
+    # Предлагаем отфильтровать топ вакансий и записываем результат в файл
     user_interaction.filter_and_save_vacancies(json_saver, vacancies_handler, top_vacancies_list)
 
 
