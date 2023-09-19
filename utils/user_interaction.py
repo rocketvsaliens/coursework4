@@ -41,10 +41,10 @@ def get_search_query_json_data(json_instance):
 def remove_muddy_vacancies(json_instance):
     """
     Удаляет из JSON-файла записи о вакансиях, в которых не указана зарплата
-    :param json_instance: класс для работы с JSON
+    :param json_instance: экземпляр класса для работы с JSON
     """
     while True:
-        choice = input('Удалить вакансии с ненулевой зарплатой. 1 - да, 0 - нет ')
+        choice = input('Удалить вакансии с ненулевой зарплатой. 0 - нет, 1 - да ')
         if choice == '0':
             break
         elif choice == '1':
@@ -93,6 +93,7 @@ def show_top_vacancies_by_salary(handler, vacancies_list: list) -> list:
 def filter_and_save_vacancies(json_instance, handler, top_vacancies: list) -> None:
     """
     Выводит на экран или сохраняет вакансии по заданным критериям
+    :param json_instance: экземпляр класса для работы с JSON
     :param handler: экземпляр класса-обработчика вакансий
     :param top_vacancies: список из вакансий топ N по зарплате
     """
@@ -120,7 +121,7 @@ def filter_and_save_vacancies(json_instance, handler, top_vacancies: list) -> No
         else:
             print('Нет вакансий, соответствующих заданным критериям.')
     else:
-        print('Вы не ввели слова для фильтрации. Сохранить топ-вакансий в файл?')
+        print('Вы не ввели слова для фильтрации. Сохранить топ N вакансий в файл?\n')
 
         while True:
             choice = input('Выберите действие: 0 - выйти из программы, 1 - записать вакансии в файл ')
@@ -137,6 +138,7 @@ def filter_and_save_vacancies(json_instance, handler, top_vacancies: list) -> No
 def save_to_file(json_instance, handler, vacancies_list: list):
     """
     Сохраняет вакансии в файл csv или xls c заданным именем
+    :param json_instance: экземпляр класса для работы с JSON
     :param handler: экземпляр класса-обработчика вакансий
     :param vacancies_list: список вакансий
     """
