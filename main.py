@@ -6,7 +6,6 @@ from utils import user_interaction
 
 
 def main():
-
     # Создаём экземпляр класса для работы с JSON
     json_saver = JSONSaver('vacancies.json')
     # Записываем все полученные вакансии в JSON
@@ -22,7 +21,11 @@ def main():
     # Выводим топ N вакансий
     top_vacancies_list = user_interaction.show_top_vacancies_by_salary(vacancies_handler, all_vacancies_list)
     # Предлагаем отфильтровать топ вакансий и записываем результат в файл
-    user_interaction.filter_and_save_vacancies(json_saver, vacancies_handler, top_vacancies_list)
+    user_interaction.filter_and_save_vacancies(vacancies_handler, top_vacancies_list)
+
+    # Очищаем файл JSON с вакансиями
+    print('\nВыход из программы.')
+    json_saver.clear_json_with_vacancies()
 
 
 if __name__ == '__main__':

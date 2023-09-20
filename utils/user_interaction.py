@@ -90,7 +90,7 @@ def show_top_vacancies_by_salary(handler, vacancies_list: list) -> list:
                 return []
 
 
-def filter_and_save_vacancies(json_instance, handler, top_vacancies: list) -> None:
+def filter_and_save_vacancies(handler, top_vacancies: list) -> None:
     """
     Выводит на экран или сохраняет вакансии по заданным критериям
     :param json_instance: экземпляр класса для работы с JSON
@@ -114,8 +114,8 @@ def filter_and_save_vacancies(json_instance, handler, top_vacancies: list) -> No
                         print(vacancy)
                     break
                 elif choice == '2':
-                    save_to_file(json_instance, handler, filtered_list)
-                    exit(0)
+                    save_to_file(handler, filtered_list)
+                    break
                 else:
                     print('Некорректный ввод.')
         else:
@@ -129,16 +129,15 @@ def filter_and_save_vacancies(json_instance, handler, top_vacancies: list) -> No
                 print('Всего доброго!')
                 break
             elif choice == '1':
-                save_to_file(json_instance, handler, top_vacancies)
-                exit(0)
+                save_to_file(handler, top_vacancies)
+                break
             else:
                 print('Некорректный ввод.')
 
 
-def save_to_file(json_instance, handler, vacancies_list: list):
+def save_to_file(handler, vacancies_list: list):
     """
     Сохраняет вакансии в файл csv или xls c заданным именем
-    :param json_instance: экземпляр класса для работы с JSON
     :param handler: экземпляр класса-обработчика вакансий
     :param vacancies_list: список вакансий
     """
@@ -155,4 +154,3 @@ def save_to_file(json_instance, handler, vacancies_list: list):
             break
         else:
             print('Некорректный ввод')
-    json_instance.clear_json_with_vacancies()
