@@ -143,6 +143,9 @@ def save_to_file(handler, vacancies_list: list):
     """
     while True:
         file_format = input('Выберите формат файла: 0 - csv, 1 - xls ')
+        if file_format not in ('0', '1'):
+            print('Некорректный ввод')
+            continue
         filename = input('Введите имя файла (без расширения): ')
         if filename == '':
             filename = 'vacancies'
