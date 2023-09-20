@@ -17,10 +17,18 @@ class JSONSaver(VacancySaver):
         Сохраняет вакансии в JSON-файл
         :param vacancy_list: список с вакансиями
         """
+        directory = os.path.dirname(self.filename)
+        if not os.path.exists(directory):
+            try:
+                os.makedirs(directory)
+            except OSError as e:
+                print(f"Ошибка при создании директории: {e}")
+                return
+
         try:
             with open(self.filename, 'w') as file:
                 json.dump(vacancy_list, file, indent=2, ensure_ascii=False)
-
+            print(f"Данные успешно записаны в файл: {self.filename}")
         except Exception as e:
             print(f"Ошибка при записи данных в файл: {e}")
 

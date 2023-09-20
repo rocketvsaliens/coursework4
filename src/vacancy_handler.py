@@ -50,12 +50,24 @@ class VacancyHandler(Vacancy):
         return matching_instances
 
     @staticmethod
-    def write_vacancies_to_csv(filename: str, list_vacancies: list) -> None:
+    def create_directory(directory_path):
+        """
+        Создаёт директорию для файлов пользователя
+        :param directory_path: название директории
+        """
+        if not os.path.exists(directory_path):
+            try:
+                os.makedirs(directory_path)
+            except OSError as e:
+                print(f"Ошибка при создании директории {directory_path}: {e}")
+
+    def write_vacancies_to_csv(self, filename: str, list_vacancies: list) -> None:
         """
         Записывает данные о вакансиях в файл csv
         :param filename: имя файла (без расширения)
         :param list_vacancies: список экземпляров класса Vacancy
         """
+        self.create_directory(USER_FILE_DIR)
         filename = filename + '.csv'
         file_path = os.path.join(USER_FILE_DIR, filename)
 
@@ -71,13 +83,13 @@ class VacancyHandler(Vacancy):
                 writer.writerow(vars(vacancy))
         print(f'Данные успешно записаны в файл CSV. Путь к файлу: {file_path}')
 
-    @staticmethod
-    def write_vacancies_to_xls(filename: str, list_vacancies: list) -> None:
+    def write_vacancies_to_xls(self, filename: str, list_vacancies: list) -> None:
         """
         Записывает данные о вакансиях в файл xls
         :param filename: имя файла (без расширения)
         :param list_vacancies: список экземпляров класса Vacancy
         """
+        self.create_directory(USER_FILE_DIR)
         filename = filename + '.xls'
         file_path = os.path.join(USER_FILE_DIR, filename)
 
