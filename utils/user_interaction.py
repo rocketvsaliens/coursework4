@@ -44,7 +44,7 @@ def remove_muddy_vacancies(json_instance):
     :param json_instance: экземпляр класса для работы с JSON
     """
     while True:
-        choice = input('Удалить вакансии с ненулевой зарплатой. 0 - нет, 1 - да ')
+        choice = input('Удалить вакансии с нулевой зарплатой. 0 - нет, 1 - да ')
         if choice == '0':
             break
         elif choice == '1':
